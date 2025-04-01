@@ -1,15 +1,28 @@
-﻿using Xamarin.Forms;
-using System.Collections.ObjectModel;
-using OpponentTracker.Models;
-using OpponentTracker.Data;
-using COSC295assign2Cao7992.Models;
+﻿using COSC295assign2Cao7992.Models;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace OpponentTracker.Views
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+namespace COSC295assign2Cao7992.Views
 {
+    [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class OpponentsPage : ContentPage
     {
-        private readonly DatabaseHelper _databaseHelper = new DatabaseHelper();
+        public OpponentsPage()
+        {
+            InitializeComponent();
+        }
+    }
+
+    public partial class OpponentsPage : ContentPage
+    {
+        private readonly Database _databaseHelper = new DatabaseHelper();
         private ObservableCollection<Opponent> _opponents;
 
         public OpponentsPage()
