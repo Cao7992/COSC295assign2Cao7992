@@ -63,6 +63,10 @@ namespace COSC295assign2Cao7992
             var match = GetMatch(id);
             return match != null ? database.Delete(match) : 0;
         }
+        public int DeleteMatch(Match m)
+        {
+            return database.Delete(m);
+        }
 
         // Game Methods
         // method to get all Games, return as a list

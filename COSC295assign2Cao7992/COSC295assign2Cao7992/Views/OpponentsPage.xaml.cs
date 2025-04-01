@@ -92,22 +92,7 @@ namespace COSC295assign2Cao7992.Views
         }
     }
 
-    public class MatchesPage : ContentPage
-    {
-        private ListView _listView;
-        private Database _database;
-        private int _opponentId;
-
-        public MatchesPage(Database database, int opponentId)
-        {
-            _database = database;
-            _opponentId = opponentId;
-            Title = "Matches";
-
-            _listView = new ListView { ItemsSource = _database.GetMatchesByOpponent(opponentId) };
-            Content = new StackLayout { Children = { _listView } };
-        }
-    }
+    
 
     public class GamesPage : ContentPage
     {
