@@ -16,7 +16,10 @@ namespace COSC295assign2Cao7992
             database.CreateTable<Opponent>();
             database.CreateTable<Match>();
             database.CreateTable<Game>();
-            hardcodeGameTable();
+            if (database.Table<Game>().Count() == 0)
+            {
+                hardcodeGameTable();
+            }
         }
 
         // Opponent Methods
@@ -59,6 +62,10 @@ namespace COSC295assign2Cao7992
         {
             var match = GetMatch(id);
             return match != null ? database.Delete(match) : 0;
+        }
+        public int DeleteMatch(Match m)
+        {
+            return database.Delete(m);
         }
 
         // Game Methods
