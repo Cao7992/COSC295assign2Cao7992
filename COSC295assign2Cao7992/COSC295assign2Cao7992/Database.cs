@@ -51,6 +51,8 @@ namespace COSC295assign2Cao7992
         public List<Match> GetMatches() => database.Table<Match>().ToList();
         // method to get all matches of a specific Opponent based on opponentID parameter
         public List<Match> GetMatchesByOpponent(int opponentId) => database.Table<Match>().Where(m => m.OpponentID == opponentId).ToList();
+        // method to get all matches of related to specific Games based on GameID parameter
+        public List<Match> GetMatchesByGame(int GameId) => database.Table<Match>().Where(m => m.GameID == GameId).ToList();
         // method to get 1 Match based on id parameter
         public Match GetMatch(int id) => database.Table<Match>().FirstOrDefault(m => m.ID == id);
         // method to insert new Match into Match table
@@ -89,7 +91,10 @@ namespace COSC295assign2Cao7992
             // Insert default game records
             hardcodeGameTable();
         }
-
+        /*
+         * Helper method to initialize data into Game Table
+         * which contains 3 entries for this example
+         */
         private void hardcodeGameTable()
         {
             database.Insert(new Game { GameName = "Chess", Description = "Simple grid game", Rating = 9.5 });

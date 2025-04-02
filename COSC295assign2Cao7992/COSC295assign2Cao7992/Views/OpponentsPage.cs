@@ -139,7 +139,7 @@ namespace COSC295assign2Cao7992.Views
         }
     }
 
-    public class AppShell : Shell
+    /*public class AppShell : Shell
     {
         public AppShell(Database database)
         {
@@ -147,5 +147,5 @@ namespace COSC295assign2Cao7992.Views
             Items.Add(new ShellContent { Title = "Games", Content = new GamesPage(database) });
             Items.Add(new ShellContent { Title = "Settings", Content = new SettingPage(database) });
         }
-    }
+    }*/
 }

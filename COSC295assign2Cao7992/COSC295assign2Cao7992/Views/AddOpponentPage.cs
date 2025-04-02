@@ -22,7 +22,7 @@ namespace COSC295assign2Cao7992.Views
             cellLName = new EntryCell { Label = "Last Name: ", LabelColor = Color.Brown, Placeholder = "required", };
             cellAddress = new EntryCell { Label = "Address: ", LabelColor = Color.Brown };
             cellPhone = new EntryCell { Label = "Phone: ", LabelColor = Color.Brown , Placeholder = "required" };
-            cellEmail = new EntryCell { Label = "Email: ", LabelColor = Color.Brown , Placeholder = "optional" };
+            cellEmail = new EntryCell { Label = "Email: ", LabelColor = Color.Brown };
 
             Button btnSave = new Button { Text = "Save" };
             btnSave.Clicked += async (sender, e) =>
