@@ -11,6 +11,7 @@ namespace COSC295assign2Cao7992.Views
 {
     public class OpponentsPage : ContentPage
     {
+        // create 2 private variables that is used for this page - database to access database source, lstOpponent - linked the item source of a list view
         private static Database _database;
         private static ObservableCollection<Opponent> lstOpponents = new ObservableCollection<Opponent>();
         public OpponentsPage(Database database)
@@ -26,6 +27,7 @@ namespace COSC295assign2Cao7992.Views
                 ItemTemplate = new DataTemplate(typeof(OpponentCell))
             };
 
+            // handle clicking event on each item of a listview, leading to new MatchesPage of that Opponent
             listView.ItemSelected += (sender, e) =>
             {
                 if (e.SelectedItem != null)
@@ -35,6 +37,7 @@ namespace COSC295assign2Cao7992.Views
                 }
             };
 
+            // initialize the Add Button
             Button btnAddOpponent = new Button
             {
                 Text = "Add New Opponent",
@@ -42,11 +45,13 @@ namespace COSC295assign2Cao7992.Views
                 BorderColor = Color.Red,
                 Margin = new Thickness(40, 40, 40, 20)
             };
+            // handle clicking event on the Add button
             btnAddOpponent.Clicked += async (sender, e) =>
             {
                 await Navigation.PushAsync(new AddOpponentPage(_database));
             };
 
+            // create a header tag, making the list view look like a 2-columns table
             StackLayout header = new StackLayout
             {
                 Orientation = StackOrientation.Horizontal,
@@ -69,15 +74,18 @@ namespace COSC295assign2Cao7992.Views
                 }
             };
 
+            // display this page as Stack, which contain header at top, list of opponent after that and finally a Add button, vertically
             Content = new StackLayout { Children = { header, listView, btnAddOpponent } };
         }
-
+        // method to handle action when the page is reloaded/ returned
         protected override void OnAppearing()
         {
             base.OnAppearing();
             RefreshOpponentsList();
         }
-
+        /*
+         * helper method to update any change from database into the listView Item resource
+         */
         private static void RefreshOpponentsList()
         {
             var opponentsFromDb = _database.GetOpponents();
@@ -87,7 +95,9 @@ namespace COSC295assign2Cao7992.Views
                 lstOpponents.Add(opponent); // Add updated data
             }
         }
-
+        /*
+         * Helper method to delete specified Opponent from the database
+         */
         public static void DeleteOpponent(Opponent op)
         {
             _database.DeleteOpponent(op.ID);
@@ -95,6 +105,11 @@ namespace COSC295assign2Cao7992.Views
         }
     }
 
+    /*
+     * Helper Class: 
+     * Purpose: to layout each cell in the list View
+     * Conponent include: height property, FullName - computed property, PhoneNumnber property of  Opponent object
+     */
     internal class OpponentCell : ViewCell
     {
         public const int OpponentCellHeight = 50;
@@ -125,7 +140,8 @@ namespace COSC295assign2Cao7992.Views
                 Children = { lblFullName, lblPhoneNumer },
                 Orientation = StackOrientation.Horizontal,
             };
-
+            
+            // Call Menu item when Item is long-tapped, generating delete option
             MenuItem mi = new MenuItem
             {
                 Text = "Delete",
@@ -138,14 +154,4 @@ namespace COSC295assign2Cao7992.Views
             ContextActions.Add(mi);
         }
     }
-
-    /*public class AppShell : Shell
-    {
-        public AppShell(Database database)
-        {
-            Items.Add(new ShellContent { Title = "Opponents", Content = new OpponentsPage(database) });
-            Items.Add(new ShellContent { Title = "Games", Content = new GamesPage(database) });
-            Items.Add(new ShellContent { Title = "Settings", Content = new SettingPage(database) });
-        }
-    }*/
 }

@@ -59,12 +59,13 @@ namespace COSC295assign2Cao7992
         public int SaveMatch(Match match) => database.Insert(match);
         // method to update a Match in Match table
         public int UpdateMatch(Match match) => database.Update(match);
-
+        // method to delete a Match based on matchID passed in
         public int DeleteMatch(int id)
         {
             var match = GetMatch(id);
             return match != null ? database.Delete(match) : 0;
         }
+        // method to delete a Match based on Match object passed in
         public int DeleteMatch(Match m)
         {
             return database.Delete(m);
@@ -75,10 +76,7 @@ namespace COSC295assign2Cao7992
         public List<Game> GetGames() => database.Table<Game>().ToList();
         // method to get 1 Game based on id parameter
         public Game GetGame(int id) => database.Table<Game>().FirstOrDefault(g => g.ID == id);
-        // method to insert new Game into Game table
-        public int SaveGame(Game game) => database.Insert(game);
-
-        // Reset Database
+        // Reset Database, which includes drops existing tables then create them.
         public void ResetDatabase()
         {
             database.DropTable<Opponent>();

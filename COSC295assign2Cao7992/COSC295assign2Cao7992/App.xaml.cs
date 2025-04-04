@@ -7,7 +7,9 @@ namespace COSC295assign2Cao7992
 {
     public partial class App : Application
     {
+        // Create database variable to connect to our database and is used accross page/class in the app
         static Database database;
+        // helper method to connect to the database and 
         public static Database Database
         {
             get
@@ -23,6 +25,8 @@ namespace COSC295assign2Cao7992
         {
             InitializeComponent();
             database = Database;
+
+            // Create a Toolbar with 3 buttons leading to 3 different Pages
             MainPage = new NavigationPage(new OpponentsPage(database));
             ToolbarItem tb1 = new ToolbarItem { Text = "Games" };
             tb1.Clicked += (s, e) => { MainPage.Navigation.PushAsync(new GamesPage(database)); };
@@ -30,6 +34,8 @@ namespace COSC295assign2Cao7992
             tb2.Clicked += (s, e) => { MainPage.Navigation.PushAsync(new SettingPage(database)); };
             ToolbarItem tb3 = new ToolbarItem { Text = "Home" };
             tb3.Clicked += (s, e) => { MainPage.Navigation.PopToRootAsync(); };
+            
+            // add the Toolbar items above into Mainpage's Toolbar
             MainPage.ToolbarItems.Add(tb1);
             MainPage.ToolbarItems.Add(tb2);
             MainPage.ToolbarItems.Add(tb3);

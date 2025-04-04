@@ -33,28 +33,52 @@ namespace COSC295assign2Cao7992.Views
             };
             Content = new StackLayout { Padding = 20, Children = { listView } };
         }
+        /* 
+         * method to handle action when the page is reloaded/ returned
+         * also, it reload/update the database to itemsoucre of list view,
+         * when there is the change on the number of matches of each game
+         */
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            var gamesFromDb = gDatabase.GetGames();
+            lstGames.Clear(); // Clear old data
+            foreach (Game game in gamesFromDb)
+            {
+                lstGames.Add(game); // Add updated data
+            }
+        }
 
+        /*
+     * Helper Class: 
+     * Purpose: to layout each cell in the list View
+     * Conponent include: height property, Gamename, Desciption, Rating, MatchesCount property of Game object
+     */
         internal class GameCell : ViewCell
         {
             public const int GameCellHeight = 120;
             public GameCell()
             {
+                // genetate components of the viewCell
                 Label lblGameName = new Label { FontAttributes = FontAttributes.Bold, FontSize = 20 };
                 Label lblDesc = new Label { FontAttributes = FontAttributes.None, FontSize = 20, HorizontalOptions = LayoutOptions.StartAndExpand };
                 Label lblRating = new Label { FontAttributes = FontAttributes.None, FontSize = 20, HorizontalOptions = LayoutOptions.End };
                 Label lblMatchesCount = new Label { FontAttributes = FontAttributes.Bold, TextColor = Color.Purple, FontSize = 20,  };
                 
+                // Bind the components with the BindingContext 
                 lblGameName.SetBinding(Label.TextProperty, "GameName");
                 lblDesc.SetBinding(Label.TextProperty, "Description");
                 lblRating.SetBinding(Label.TextProperty, "Rating");
                 lblMatchesCount.SetBinding(Label.TextProperty, "ID", converter: new GameIdConvert());
 
+                // bound two components Description and Rating together to display them on 1 line
                 StackLayout stack1 = new StackLayout
                 {
                     Orientation = StackOrientation.Horizontal,
                     Children = { lblDesc, lblRating }
                 };
 
+                // bound component lblMatchesCount with a label bofore it to display them on 1 line
                 StackLayout stack2 = new StackLayout
                 {
                     Orientation = StackOrientation.Horizontal,
