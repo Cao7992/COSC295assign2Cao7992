@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -25,7 +26,8 @@ namespace COSC295assign2Cao7992.Views
 
         private static ObservableCollection<Match> lstMatches = new ObservableCollection<Match>();  
         private static ObservableCollection<Game> lstGames = new ObservableCollection<Game>();
-        //private string SelectedGame { get; set; }
+        private Match curSelectedMatch { get; set; }
+        private int preSelectedGameIndex = 1;
 
         public MatchesPage(Database database, int opponentId)
         {
@@ -46,13 +48,31 @@ namespace COSC295assign2Cao7992.Views
                 HeightRequest = ListViewHeight,
             };
 
+            // Initialize current selected Matche
+            curSelectedMatch = (Match)mListView.SelectedItem;
+
+            mListView.ItemTapped += (sender, e) =>
+            {
+                if ((Match)mListView.SelectedItem != curSelectedMatch)
+                {
+                    curSelectedMatch = (Match)mListView.SelectedItem;
+                }
+                else
+                {
+                    mListView.SelectedItem = curSelectedMatch = null;
+                }
+                RefreshTableView();
+                RefreshButtonView();
+            };
+
+            GetPreviousSelectedGame();
             // Picker for selecting a game
             tbGamePicker = new Picker
             {
                 Title = "Select Game",
                 ItemsSource = lstGames,
                 ItemDisplayBinding = new Binding("GameName"),
-                SelectedItem = Preferences.Get("LastGameUsed", "Chess"),
+                SelectedItem = lstGames.ElementAt(preSelectedGameIndex - 1),
                 HorizontalOptions = LayoutOptions.FillAndExpand,
             };
             ViewCell cellGamePicker = new ViewCell 
@@ -118,9 +138,6 @@ namespace COSC295assign2Cao7992.Views
                 {
                     mListView,
                     mTableView,
-                    /*new Label { Text = "Select Game:" }, tbGamePicker,
-                    new Label { Text = "Date:" }, tbDatePicker,
-                    new Label { Text = "Win:" }, tbWinSwitch,*/
                     btnAddMatch
                 }
             };
@@ -129,7 +146,24 @@ namespace COSC295assign2Cao7992.Views
         protected override void OnAppearing()
         {
             base.OnAppearing();
+            if (mDatabase.GetOpponent(mOpponentId) == null)
+            {
+                Navigation.PopToRootAsync();
+            }
             RefreshMatchesList();
+        }
+
+        protected async void GetPreviousSelectedGame()
+        {
+            string result = await SecureStorage.GetAsync("preSelectedGame");
+            if (result == null)
+            {
+                await SecureStorage.SetAsync("preSelectedGame", "1");
+            }
+            else
+            {
+                preSelectedGameIndex = int.Parse(result);
+            }
         }
 
         private static void RefreshMatchesList()
@@ -140,6 +174,29 @@ namespace COSC295assign2Cao7992.Views
             {
                 lstMatches.Add(match); // Add updated data
             }
+        }
+
+        private void RefreshTableView()
+        {
+            if (curSelectedMatch != null)
+            {
+                tbGamePicker.SelectedItem = lstGames.ElementAt(curSelectedMatch.GameID-1);
+                tbDatePicker.Date = curSelectedMatch.Date;
+                tbCommentEntryCell.Text = curSelectedMatch.Comment;
+                tbWinSwitchCell.On = curSelectedMatch.Win;
+            }
+            else
+            {
+                tbGamePicker.SelectedItem = lstGames.ElementAt(preSelectedGameIndex - 1);
+                tbDatePicker.Date = DateTime.Today;
+                tbCommentEntryCell.Text = "";
+                tbWinSwitchCell.On = false;
+            }
+        }
+
+        private void RefreshButtonView()
+        {
+            btnAddMatch.Text = (curSelectedMatch==null) ? "Add" : "Update";
         }
 
         private void SaveMatch(object sender, EventArgs e)
@@ -154,10 +211,21 @@ namespace COSC295assign2Cao7992.Views
                 Comment = tbCommentEntryCell.Text,
                 Win = tbWinSwitchCell.On
             };
-
-            mDatabase.SaveMatch(match);
+            if (curSelectedMatch == null)
+            {
+                mDatabase.SaveMatch(match);
+            }
+            else
+            {
+                match.ID = curSelectedMatch.ID;
+                mDatabase.UpdateMatch(match);
+            }
+            curSelectedMatch = null;
+            preSelectedGameIndex = tbGamePicker.SelectedIndex + 1;
             RefreshMatchesList();
-            Preferences.Set("LastGameUsed", ((Game)tbGamePicker.SelectedItem).GameName);
+            RefreshTableView();
+            RefreshButtonView();
+            SecureStorage.SetAsync("preSelectedGame", preSelectedGameIndex.ToString());
         }
 
         private static void DeleteMatch(Match match)
@@ -184,6 +252,19 @@ namespace COSC295assign2Cao7992.Views
                 lblComment.SetBinding(Label.TextProperty, "Comment");
                 lblGame.SetBinding(Label.TextProperty, "GameID", converter: new GameIdConvert());
                 swWin.SetBinding(Switch.IsToggledProperty, "Win");
+
+                // Add a trigger to change the color based on the IsToggled property
+                swWin.Toggled += (sender, e) =>
+                {
+                    if (swWin.IsToggled)
+                    {
+                        swWin.BackgroundColor = Color.Pink;
+                    }
+                    else
+                    {
+                        swWin.BackgroundColor = Color.Gray;
+                    }
+                };
 
                 StackLayout stack1 = new StackLayout
                 {
